@@ -2,14 +2,32 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MultiStepLoader as Loader } from "../components/ui/multi-step-loader";
 import { cn } from "@/utils/cn";
 import { useState } from "react";
 import axios from 'axios';
 
-import { Cloudinary } from 'cloudinary-core';
-// const cloudinary = Cloudinary.new({ cloud_name: 'your_cloud_name' });
+const loadingStates = [
+  {
+    text: "Uploading images",
+  },
+  {
+    text: "Processing images",
+  },
+  {
+    text: "Generating product details",
+  },
+  {
+    text: "Calling Database",
+  },
+  {
+    text: "Someting still happening",
+  }
+];
 
 export default function Home() {
+  const [loading, setLoading] = useState(false);
+
   const uploadImageToCloudinary = async (image: File): Promise<string | null> => {
     try {
       const formData = new FormData();
@@ -63,6 +81,7 @@ export default function Home() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    setLoading(true);
     console.log(product);
     console.log("images:", images);
     const urls = await handleUploadImages();
@@ -71,7 +90,7 @@ export default function Home() {
       data.push({ "imageLink": ling });
     });
 
-    axios.post('https://shopblues.onrender.com/process-images', {
+    await axios.post('https://shopblues.onrender.com/process-images', {
       "data": data,
       // "details": product
     })
@@ -83,7 +102,7 @@ export default function Home() {
         console.log(error);
       });
 
-    axios.post('https://shopblues.onrender.com/saveto', {
+    await axios.post('https://shopblues.onrender.com/saveto', {
       "data": iGotData,
       "details": product
       // "details": product
@@ -95,6 +114,7 @@ export default function Home() {
       .catch(function (error) {
         console.log(error);
       });
+    setLoading(false);
   };
 
   const [images, setImages] = useState<File[]>([]);
@@ -126,6 +146,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 pt-24 container">
+      <Loader loadingStates={loadingStates} loading={loading} duration={4000} />
       <section className="flex flex-col md:flex-row  gap-4 md:gap-10 w-full">
         <div className="max-w-sm w-full rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
           <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
@@ -221,20 +242,11 @@ export default function Home() {
               )}
             </h2>
           </div>
-          {/* <button
-            className="bg-gradient-to-br w-full relative p-4 group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 dark:bg-zinc-800 max-w-32 text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] flex items-center justify-center"
-            type="submit"
-          >
-            Upload
-            <BottomGradient />
-          </button> */}
-
           <input
             type="file"
             accept="image/*"
             multiple
             onChange={handleFileInputChange}
-          // className="bg-gradient-to-br w-full relative p-4 group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 dark:bg-zinc-800 max-w-32 text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] flex items-center justify-center"
           />
         </div>
       </section>
