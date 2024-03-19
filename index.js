@@ -25,6 +25,7 @@ const uploadToCloudinary = async (imagePath) => {
   try {
     const result = await cloudinary.uploader.upload(imagePath);
     console.log(result.secure_url);
+    console.log("edher hia");
     return result.secure_url;
   } catch (error) {
     console.error(error);
@@ -58,8 +59,8 @@ app.post("/process-images", async (req, res) => {
         }
       }
     }
-    // console.log(globalData[0].bgRemLinks);
-
+    console.log(globalData[0].bgRemLinks[i]);
+    const productimage = globalData[0].bgRemLinks[i];
     const imageClassification = await about_gen(globalData[0].bgRemLinks[i]);
 
     console.log(imageClassification);
@@ -74,7 +75,7 @@ app.post("/process-images", async (req, res) => {
     const productDEsc = jsonResponse.description;
 
     const Lifeimg = await lifestyleimg(
-      globalData[0].bgRemLinks[0],
+      productimage,
       productName
     );
     console.log(Lifeimg);
@@ -83,7 +84,7 @@ app.post("/process-images", async (req, res) => {
       productName: productName,
       productCategory: productCategory,
       productDescription: productDEsc,
-      productImage: globalData[0].bgRemLinks[i],
+      productImage: productimage,
       lifestyleImage: Lifeimg,
     };
     res.json(responseJson);
@@ -106,7 +107,7 @@ app.post("/image", async (req, res) => {
       }
     }
     // console.log(globalData[0].bgRemLinks);
-
+    const productimage = globalData[0].bgRemLinks[i];
     const imageClassification = await about_gen(globalData[0].bgRemLinks[i]);
     i++;
     console.log(imageClassification);
@@ -118,12 +119,13 @@ app.post("/image", async (req, res) => {
     const productName = jsonResponse.name;
     const productCategory = jsonResponse.category;
     const productDEsc = jsonResponse.description;
+    console.log(productimage);
 
     const responseJson = {
       productName: productName,
       productCategory: productCategory,
       productDescription: productDEsc,
-      productImage: globalData[0].bgRemLinks[i],
+      productImage: productimage,
     };
     res.json(responseJson);
     console.log("yes bro its done");
