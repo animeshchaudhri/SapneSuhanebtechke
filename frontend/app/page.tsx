@@ -6,7 +6,7 @@ import { create } from 'zustand'
 
 
 import { cn } from "@/utils/cn";
-
+// hello bro
 export default function Home() {
   const BottomGradient = () => {
     return (
