@@ -83,7 +83,7 @@ app.post("/process-images", async (req, res) => {
       productName: productName,
       productCategory: productCategory,
       productDescription: productDEsc,
-      productImage: globalData[0].bgRemLinks[0],
+      productImage: globalData[0].bgRemLinks[i],
       lifestyleImage: Lifeimg,
     };
     res.json(responseJson);
@@ -123,8 +123,7 @@ app.post("/image", async (req, res) => {
       productName: productName,
       productCategory: productCategory,
       productDescription: productDEsc,
-      productImage: globalData[0].bgRemLinks[0],
-      lifestyleImage: Lifeimg,
+      productImage: globalData[0].bgRemLinks[i],
     };
     res.json(responseJson);
     console.log("yes bro its done");
