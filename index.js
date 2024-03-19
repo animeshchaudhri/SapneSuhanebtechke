@@ -3,6 +3,8 @@ import express from "express";
 import { removeDaBg } from "./bgrem.js";
 import { about_gen } from "./clasification.js";
 import { lifestyleimg } from "./Lifestyle.js";
+app.use(cors());
+
 let i = 0;
 const app = express();
 const port = 3000;
