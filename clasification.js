@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import dotenv from "dotenv";
 dotenv.config();
-console.log(process.env.OPENAI_API_KEY);
+
 const openai = new OpenAI();
 
 export async function about_gen(image_url) {

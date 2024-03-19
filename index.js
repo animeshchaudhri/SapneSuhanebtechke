@@ -3,7 +3,7 @@ import express from "express";
 import { removeDaBg } from "./bgrem.js";
 import { about_gen } from "./clasification.js";
 import { lifestyleimg } from "./Lifestyle.js";
-
+let i = 0;
 const app = express();
 const port = 3000;
 
@@ -60,9 +60,10 @@ app.post("/process-images", async (req, res) => {
     }
     // console.log(globalData[0].bgRemLinks);
 
-    const imageClassification = await about_gen(globalData[0].bgRemLinks[0]);
+    const imageClassification = await about_gen(globalData[0].bgRemLinks[i]);
 
     console.log(imageClassification);
+    i++;
     const jsonResponse = JSON.parse(
       imageClassification.message.content.match(/```json\n([\s\S]*)\n```/)[1]
     );
@@ -72,20 +73,64 @@ app.post("/process-images", async (req, res) => {
     const productCategory = jsonResponse.category;
     const productDEsc = jsonResponse.description;
 
-    // Output the results
-    console.log("Product Name:", productName);
-    console.log("Product Category:", productCategory);
-    console.log("Product Description:", productDEsc);
-
     const Lifeimg = await lifestyleimg(
       globalData[0].bgRemLinks[0],
       productName
     );
     console.log(Lifeimg);
+
+    const responseJson = {
+      productName: productName,
+      productCategory: productCategory,
+      productDescription: productDEsc,
+      productImage: globalData[0].bgRemLinks[0],
+      lifestyleImage: Lifeimg,
+    };
+    res.json(responseJson);
+    console.log("yes bro its done");
   } catch (err) {
     console.log(err);
   }
-  res.send("Hello, world!");
+});
+app.post("/image", async (req, res) => {
+  let linksArray = req.body.data;
+
+  try {
+    for (const link_object of linksArray) {
+      const imagePath = await removeDaBg(link_object.imageLink);
+      if (imagePath) {
+        const cloudinaryUrl = await uploadToCloudinary(imagePath);
+        if (cloudinaryUrl) {
+          globalData[0].bgRemLinks.push(cloudinaryUrl);
+        }
+      }
+    }
+    // console.log(globalData[0].bgRemLinks);
+
+    const imageClassification = await about_gen(globalData[0].bgRemLinks[i]);
+    i++;
+    console.log(imageClassification);
+    const jsonResponse = JSON.parse(
+      imageClassification.message.content.match(/```json\n([\s\S]*)\n```/)[1]
+    );
+    console.log(jsonResponse);
+
+    const productName = jsonResponse.name;
+    const productCategory = jsonResponse.category;
+    const productDEsc = jsonResponse.description;
+
+    const responseJson = {
+      productName: productName,
+      productCategory: productCategory,
+      productDescription: productDEsc,
+      productImage: globalData[0].bgRemLinks[0],
+      lifestyleImage: Lifeimg,
+    };
+    res.json(responseJson);
+    console.log("yes bro its done");
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 // Start the server

@@ -1,6 +1,8 @@
 import axios from "axios";
 import FormData from "form-data";
 import fs from "fs";
+import dotenv from "dotenv";
+dotenv.config();
 
 export const removeDaBg = (imageLink) => {
   const formData = new FormData();
@@ -15,7 +17,7 @@ export const removeDaBg = (imageLink) => {
     responseType: "arraybuffer",
     headers: {
       ...formData.getHeaders(),
-      "X-Api-Key": "qEeBGfYyB7knPbCxW8bkPUQL",
+      "X-Api-Key": process.env.BGAPI,
     },
     encoding: null,
   })
