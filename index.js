@@ -3,8 +3,6 @@ import express from 'express';
 const app = express();
 const port = 3000;
 
-
-
 // Define routes
 app.get('/', async (req, res) => {
   const options = {
