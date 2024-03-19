@@ -8,7 +8,7 @@ export const removeDaBg = (imageLink) => {
     formData.append('image_url', imageLink);
     formData.append('bg_color', 'ffffff');
 
-    axios({
+    return axios({
         method: 'post',
         url: 'https://api.remove.bg/v1.0/removebg',
         data: formData,
@@ -19,12 +19,16 @@ export const removeDaBg = (imageLink) => {
         },
         encoding: null
     })
-        .then((response) => {
-            if (response.status != 200) return console.error('Error:', response.status, response.statusText);
-            fs.writeFileSync("./images/bgrem/no-bg.png", response.data);
-        })
-        .catch((error) => {
-            return console.error('Request failed:', error);
-        });
-}
-// removeDaBg("https://res.cloudinary.com/drsgwyrae/image/upload/v1710835343/lab_rat_2.jpg")
+    .then((response) => {
+        if (response.status !== 200) {
+            console.error('Error:', response.status, response.statusText);
+            return null;
+        }
+        fs.writeFileSync("./images/bgrem/no-bg.png", response.data);
+        return "./images/bgrem/no-bg.png";
+    })
+    .catch((error) => {
+        console.error('Request failed:', error);
+        return null; // Return null or handle the error as needed
+    });
+};
