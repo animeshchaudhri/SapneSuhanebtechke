@@ -3,11 +3,17 @@ import express from "express";
 import { removeDaBg } from "./bgrem.js";
 import { about_gen } from "./clasification.js";
 import { lifestyleimg } from "./Lifestyle.js";
+import { MongoClient, ServerApiVersion } from "mongodb";
+const uri =
+  "mongodb+srv://harshit:XBp7RhPso76VuIs1@dicehack.fztdmtj.mongodb.net/?retryWrites=true&w=majority&appName=DiceHack";
+
+import cors from "cors";
 let i = 0;
 const app = express();
 const port = 3000;
 
 app.use(express.json());
+app.use(cors());
 
 let globalData = [
   {
@@ -46,6 +52,45 @@ cloudinary links
   ]
 */
 
+app.post("/saveto", async (req, res) => {
+  const data = req.body;
+  console.log(data);
+  const client = new MongoClient(uri, {
+    serverApi: {
+      version: ServerApiVersion.v1,
+      strict: true,
+      deprecationErrors: true,
+    },
+  });
+  await client.connect();
+
+  await client.db("admin").command({ ping: 1 });
+  console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  const collectionName = "DiceHack"; // Replace with your desired collection name
+  const db = client.db("hacker");
+  const result = await db.collection(collectionName).insertOne(data);
+  console.log("Data inserted successfully:", result.insertedId);
+  res.json({ message: "Data inserted successfully" });
+});
+app.get("/fetch", async (req, res) => {
+  const client = new MongoClient(uri, {
+    serverApi: {
+      version: ServerApiVersion.v1,
+      strict: true,
+      deprecationErrors: true,
+    },
+  });
+  await client.connect();
+
+  await client.db("admin").command({ ping: 1 });
+  console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  const collectionName = "DiceHack"; // Replace with your desired collection name
+  const db = client.db("hacker");
+  const data = await db.collection(collectionName).find().toArray();
+  console.log("Fetched data:", data);
+  res.json(data);
+});
+
 app.post("/process-images", async (req, res) => {
   let linksArray = req.body.data;
 
@@ -74,10 +119,7 @@ app.post("/process-images", async (req, res) => {
     const productCategory = jsonResponse.category;
     const productDEsc = jsonResponse.description;
 
-    const Lifeimg = await lifestyleimg(
-      productimage,
-      productName
-    );
+    const Lifeimg = await lifestyleimg(productimage, productName);
     console.log(Lifeimg);
 
     const responseJson = {
