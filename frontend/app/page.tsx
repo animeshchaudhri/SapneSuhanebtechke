@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/utils/cn";
 import { useState } from "react";
+import axios from 'axios';
 
 import { Cloudinary } from 'cloudinary-core';
 // const cloudinary = Cloudinary.new({ cloud_name: 'your_cloud_name' });
@@ -31,10 +32,10 @@ export default function Home() {
     }
   };
 
-  const handleUploadImages = async (): Promise<void> => {
+  const handleUploadImages = async () => {
     const uploadedImageUrls = await Promise.all(images.map(uploadImageToCloudinary));
     console.log('Uploaded Image URLs:', uploadedImageUrls);
-    
+    return uploadedImageUrls;
   };
 
 
@@ -58,11 +59,42 @@ export default function Home() {
     });
   };
 
-  const handleSubmit = (e: any) => {
+  let iGotData: any;
+
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     console.log(product);
     console.log("images:", images);
-    handleUploadImages();
+    const urls = await handleUploadImages();
+    const data: any = []
+    urls.forEach(ling => {
+      data.push({ "imageLink": ling });
+    });
+
+    axios.post('https://shopblues.onrender.com/process-images', {
+      "data": data,
+      // "details": product
+    })
+      .then(function (response) {
+        iGotData = response.data
+        console.log(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+    axios.post('https://shopblues.onrender.com/saveto', {
+      "data": iGotData,
+      "details": product
+      // "details": product
+    })
+      .then(function (response) {
+        // iGotData = response.data
+        console.log("save to: ", response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   const [images, setImages] = useState<File[]>([]);
@@ -202,7 +234,7 @@ export default function Home() {
             accept="image/*"
             multiple
             onChange={handleFileInputChange}
-            // className="bg-gradient-to-br w-full relative p-4 group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 dark:bg-zinc-800 max-w-32 text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] flex items-center justify-center"
+          // className="bg-gradient-to-br w-full relative p-4 group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 dark:bg-zinc-800 max-w-32 text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] flex items-center justify-center"
           />
         </div>
       </section>
