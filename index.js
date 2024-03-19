@@ -3,13 +3,13 @@ import express from "express";
 import { removeDaBg } from "./bgrem.js";
 import { about_gen } from "./clasification.js";
 import { lifestyleimg } from "./Lifestyle.js";
-app.use(cors());
-
+import cors from "cors";
 let i = 0;
 const app = express();
 const port = 3000;
 
 app.use(express.json());
+app.use(cors());
 
 let globalData = [
   {
@@ -76,10 +76,7 @@ app.post("/process-images", async (req, res) => {
     const productCategory = jsonResponse.category;
     const productDEsc = jsonResponse.description;
 
-    const Lifeimg = await lifestyleimg(
-      productimage,
-      productName
-    );
+    const Lifeimg = await lifestyleimg(productimage, productName);
     console.log(Lifeimg);
 
     const responseJson = {
