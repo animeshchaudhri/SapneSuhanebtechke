@@ -6,8 +6,8 @@ const replicate = new Replicate();
 const input = {
   seed: 24603,
   image:
-    "https://replicate.delivery/pbxt/JX7yjB7jAgeCC1tUmWUUZlWg3IDWW9vLqIjwqWOlj9p6zyyn/sofa.png",
-  prompt: "a modern sofa in a contemporary living room, stylish decor",
+    "https://res.cloudinary.com/drsgwyrae/image/upload/v1710835343/lab_rat_2.jpg",
+  prompt: "a modern mouse on a table with a laptop and a cup of coffee",
   apply_img: false,
   product_fill: "80",
   condition_scale: 0.8,
