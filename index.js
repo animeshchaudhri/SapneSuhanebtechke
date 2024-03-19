@@ -1,26 +1,31 @@
-import { v2 as cloudinary } from 'cloudinary';
-import express from 'express';
-import { removeDaBg } from './bgrem.js';
-
+import { v2 as cloudinary } from "cloudinary";
+import express from "express";
+import { removeDaBg } from "./bgrem.js";
+import { about_gen } from "./clasification.js";
+import { lifestyleimg } from "./Lifestyle.js";
+let i = 0;
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 
-let globalData = [{
-  bgRemLinks: []
-}]
+let globalData = [
+  {
+    bgRemLinks: [],
+  },
+];
 
 cloudinary.config({
-  cloud_name: 'drsgwyrae',
-  api_key: '931313911945979',
-  api_secret: 'fMn0tfbPEP1vlq6A1WAoHqGLybg'
+  cloud_name: "drsgwyrae",
+  api_key: "931313911945979",
+  api_secret: "fMn0tfbPEP1vlq6A1WAoHqGLybg",
 });
 
 const uploadToCloudinary = async (imagePath) => {
   try {
     const result = await cloudinary.uploader.upload(imagePath);
     console.log(result.secure_url);
+    console.log("edher hia");
     return result.secure_url;
   } catch (error) {
     console.error(error);
@@ -41,7 +46,7 @@ cloudinary links
   ]
 */
 
-app.post('/process-images', async (req, res) => {
+app.post("/process-images", async (req, res) => {
   let linksArray = req.body.data;
 
   try {
@@ -54,11 +59,79 @@ app.post('/process-images', async (req, res) => {
         }
       }
     }
-    console.log(globalData[0].bgRemLinks);
+    console.log(globalData[0].bgRemLinks[i]);
+    const productimage = globalData[0].bgRemLinks[i];
+    const imageClassification = await about_gen(globalData[0].bgRemLinks[i]);
+
+    console.log(imageClassification);
+    i++;
+    const jsonResponse = JSON.parse(
+      imageClassification.message.content.match(/```json\n([\s\S]*)\n```/)[1]
+    );
+    console.log(jsonResponse);
+    // Extract the product name and category
+    const productName = jsonResponse.name;
+    const productCategory = jsonResponse.category;
+    const productDEsc = jsonResponse.description;
+
+    const Lifeimg = await lifestyleimg(
+      productimage,
+      productName
+    );
+    console.log(Lifeimg);
+
+    const responseJson = {
+      productName: productName,
+      productCategory: productCategory,
+      productDescription: productDEsc,
+      productImage: productimage,
+      lifestyleImage: Lifeimg,
+    };
+    res.json(responseJson);
+    console.log("yes bro its done");
   } catch (err) {
     console.log(err);
   }
-  res.send('Hello, world!');
+});
+app.post("/image", async (req, res) => {
+  let linksArray = req.body.data;
+
+  try {
+    for (const link_object of linksArray) {
+      const imagePath = await removeDaBg(link_object.imageLink);
+      if (imagePath) {
+        const cloudinaryUrl = await uploadToCloudinary(imagePath);
+        if (cloudinaryUrl) {
+          globalData[0].bgRemLinks.push(cloudinaryUrl);
+        }
+      }
+    }
+    // console.log(globalData[0].bgRemLinks);
+    const productimage = globalData[0].bgRemLinks[i];
+    const imageClassification = await about_gen(globalData[0].bgRemLinks[i]);
+    i++;
+    console.log(imageClassification);
+    const jsonResponse = JSON.parse(
+      imageClassification.message.content.match(/```json\n([\s\S]*)\n```/)[1]
+    );
+    console.log(jsonResponse);
+
+    const productName = jsonResponse.name;
+    const productCategory = jsonResponse.category;
+    const productDEsc = jsonResponse.description;
+    console.log(productimage);
+
+    const responseJson = {
+      productName: productName,
+      productCategory: productCategory,
+      productDescription: productDEsc,
+      productImage: productimage,
+    };
+    res.json(responseJson);
+    console.log("yes bro its done");
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 // Start the server
