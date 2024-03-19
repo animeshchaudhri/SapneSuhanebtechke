@@ -2,11 +2,10 @@ import OpenAI from "openai";
 import dotenv from "dotenv";
 dotenv.config();
 console.log(process.env.OPENAI_API_KEY);
-const openai = new OpenAI(
- 
-);
+const openai = new OpenAI();
 
-async function main() {
+export async function about_gen(image_url) {
+  console.log(image_url);
   const response = await openai.chat.completions.create({
     model: "gpt-4-vision-preview",
     messages: [
@@ -15,17 +14,16 @@ async function main() {
         content: [
           {
             type: "text",
-            text: "Give me short prompt for making a marketing images background for this image ",
+            text: "what is this image of give me json respose of 'name, category, description' ",
           },
           {
             type: "image_url",
-            image_url:
-              "https://res.cloudinary.com/drsgwyrae/image/upload/v1710835343/lab_rat_2.jpg",
+            image_url: `${image_url}`,
           },
         ],
       },
     ],
   });
-  console.log(response.choices[0]);
+  return response.choices[0];
+  // console.log(response.choices[0]);
 }
-main();

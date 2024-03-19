@@ -1,20 +1,24 @@
-import { v2 as cloudinary } from 'cloudinary';
-import express from 'express';
-import { removeDaBg } from './bgrem.js';
+import { v2 as cloudinary } from "cloudinary";
+import express from "express";
+import { removeDaBg } from "./bgrem.js";
+import { about_gen } from "./clasification.js";
+import { lifestyleimg } from "./Lifestyle.js";
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 
-let globalData = [{
-  bgRemLinks: []
-}]
+let globalData = [
+  {
+    bgRemLinks: [],
+  },
+];
 
 cloudinary.config({
-  cloud_name: 'drsgwyrae',
-  api_key: '931313911945979',
-  api_secret: 'fMn0tfbPEP1vlq6A1WAoHqGLybg'
+  cloud_name: "drsgwyrae",
+  api_key: "931313911945979",
+  api_secret: "fMn0tfbPEP1vlq6A1WAoHqGLybg",
 });
 
 const uploadToCloudinary = async (imagePath) => {
@@ -41,7 +45,7 @@ cloudinary links
   ]
 */
 
-app.post('/process-images', async (req, res) => {
+app.post("/process-images", async (req, res) => {
   let linksArray = req.body.data;
 
   try {
@@ -54,11 +58,34 @@ app.post('/process-images', async (req, res) => {
         }
       }
     }
-    console.log(globalData[0].bgRemLinks);
+    // console.log(globalData[0].bgRemLinks);
+
+    const imageClassification = await about_gen(globalData[0].bgRemLinks[0]);
+
+    console.log(imageClassification);
+    const jsonResponse = JSON.parse(
+      imageClassification.message.content.match(/```json\n([\s\S]*)\n```/)[1]
+    );
+    console.log(jsonResponse);
+    // Extract the product name and category
+    const productName = jsonResponse.name;
+    const productCategory = jsonResponse.category;
+    const productDEsc = jsonResponse.description;
+
+    // Output the results
+    console.log("Product Name:", productName);
+    console.log("Product Category:", productCategory);
+    console.log("Product Description:", productDEsc);
+
+    const Lifeimg = await lifestyleimg(
+      globalData[0].bgRemLinks[0],
+      productName
+    );
+    console.log(Lifeimg);
   } catch (err) {
     console.log(err);
   }
-  res.send('Hello, world!');
+  res.send("Hello, world!");
 });
 
 // Start the server
