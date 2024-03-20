@@ -23,7 +23,7 @@ let globalData = [
     bgRemLinks: [],
   },
 ];
-
+// harshit gay hai 
 cloudinary.config({
   cloud_name: "drsgwyrae",
   api_key: "931313911945979",
