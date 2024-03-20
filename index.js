@@ -79,9 +79,8 @@ app.post("/saveto", async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-  // const file = fs.readFileSync(path.join(process.cwd(),  "results.csv"));
-  // Use the file as needed
-  res.sendFile(path.join(process.cwd(),  "results.csv"));
+
+  res.sendFile(path.join(process.cwd(), "results.csv"));
   // res.json({ message: "Data inserted successfully" });
 });
 app.get("/fetch", async (req, res) => {
