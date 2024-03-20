@@ -4,10 +4,13 @@ import { removeDaBg } from "./bgrem.js";
 import { about_gen } from "./clasification.js";
 import { lifestyleimg } from "./Lifestyle.js";
 import { MongoClient, ServerApiVersion } from "mongodb";
+import { appendFileSync } from "fs";
 const uri =
   "mongodb+srv://harshit:XBp7RhPso76VuIs1@dicehack.fztdmtj.mongodb.net/?retryWrites=true&w=majority&appName=DiceHack";
 
 import cors from "cors";
+import fs from "fs";
+import path from "path";
 let i = 0;
 const app = express();
 const port = 3000;
@@ -53,8 +56,8 @@ cloudinary links
 */
 
 app.post("/saveto", async (req, res) => {
-  const data = req.body;
-  console.log(data);
+  const dataa = req.body;
+  console.log(dataa);
   const client = new MongoClient(uri, {
     serverApi: {
       version: ServerApiVersion.v1,
@@ -68,9 +71,18 @@ app.post("/saveto", async (req, res) => {
   console.log("Pinged your deployment. You successfully connected to MongoDB!");
   const collectionName = "DiceHack"; // Replace with your desired collection name
   const db = client.db("hacker");
-  const result = await db.collection(collectionName).insertOne(data);
+  const result = await db.collection(collectionName).insertOne(dataa);
   console.log("Data inserted successfully:", result.insertedId);
-  res.json({ message: "Data inserted successfully" });
+  const csv = `${dataa.data.productName},${dataa.data.productCategory},${dataa.data.productDescription},${dataa.data.productImage},${dataa.data.lifestyleImage}\n`;
+  try {
+    appendFileSync("./results.csv", csv); // Append the CSV row to the file
+  } catch (error) {
+    console.log(error);
+  }
+  // const file = fs.readFileSync(path.join(process.cwd(),  "results.csv"));
+  // Use the file as needed
+  res.sendFile(path.join(process.cwd(),  "results.csv"));
+  // res.json({ message: "Data inserted successfully" });
 });
 app.get("/fetch", async (req, res) => {
   const client = new MongoClient(uri, {
