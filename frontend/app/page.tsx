@@ -30,11 +30,37 @@ const loadingStates = [
     text: "Calling Database",
   },
   {
-    text: "Someting still happening",
+    text: "Something still happening",
   }
 ];
 
 export default function Home() {
+  const handleExport = (e: any) => {
+    e.preventDefault();
+    const dataa = {
+      "data": genData,
+      "details": product
+    }
+
+    fetch('https://shopblues.onrender.com/saveto', {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      mode: "cors",
+      method: 'POST',
+      body: JSON.stringify(dataa),
+    }).then((res) => { return res.blob(); })
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'product.csv';
+        link.click();
+        window.URL.revokeObjectURL(url);
+      })
+  }
+
+
   const [formOneSubmitted, setFormOneSubmitted] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -177,7 +203,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 pt-24 container">
-      <Loader loadingStates={loadingStates} loading={loading} duration={4000} />
+      <Loader loadingStates={loadingStates} loading={loading} duration={6000} />
       {!formOneSubmitted ? (<section className="flex flex-col md:flex-row  gap-4 md:gap-10 w-full">
         <div className="max-w-sm w-full rounded-2xl p-4 md:p-8 shadow-input bg-white/10 dark:bg-black/10 backdrop-blur-sm">
           <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
@@ -290,7 +316,7 @@ export default function Home() {
               Please check the AI generated details of the product you want to sell. Please make sure the information is accurate.
             </p>
 
-            <form className="my-8" onSubmit={handleSubmit}>
+            <form className="my-8" >
               <LabelInputContainer className="mb-4">
                 <Label htmlFor="product title">Product Name</Label>
                 <Input placeholder="XYZ" type="text" value={genData.productName} name='productName' onChange={handleGenChange} />
@@ -322,6 +348,15 @@ export default function Home() {
                 type="submit"
               >
                 Publish
+                <BottomGradient />
+              </button>
+              <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
+
+              <button
+                className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+                type="submit" onClick={handleExport}
+              >
+                Export to CSV
                 <BottomGradient />
               </button>
             </form>
