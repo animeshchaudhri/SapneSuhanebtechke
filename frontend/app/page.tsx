@@ -63,7 +63,34 @@ export default function Home() {
       });
   };
 
-  const [formOneSubmitted, setFormOneSubmitted] = useState(true);
+  const handleImageDownload = (e: any) => {
+    e.preventDefault();
+    // const dataa = {
+    //   data: genData,
+    //   details: product,
+    // };
+
+    fetch(genData.productImage, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      mode: "cors",
+      method: "GET",
+    })
+      .then((res) => {
+        return res.blob();
+      })
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "product1.png";
+        link.click();
+        window.URL.revokeObjectURL(url);
+      });
+  };
+
+  const [formOneSubmitted, setFormOneSubmitted] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -444,11 +471,19 @@ export default function Home() {
               <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
 
               <button
-                className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+                className="bg-gradient-to-br mb-8 relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
                 type="submit"
                 onClick={handleExport}
               >
                 Export to CSV
+                <BottomGradient />
+              </button>
+              <button
+                className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+                type="submit"
+                onClick={handleImageDownload}
+              >
+                Export Images
                 <BottomGradient />
               </button>
             </form>
@@ -488,11 +523,11 @@ export default function Home() {
                 <CarouselNext />
               </Carousel>
             ) : (
-              <iframe className="w-full h-full"
-      
-      src="https://photokit.com/editor/?lang=en"
-      // Optionally hide the iframe if it shouldn't be visible
-    />
+              <iframe
+                className="w-full h-full"
+                src="https://photokit.com/editor/?lang=en"
+                // Optionally hide the iframe if it shouldn't be visible
+              />
             )}
             <button
               className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
