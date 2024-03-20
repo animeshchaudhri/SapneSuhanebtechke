@@ -14,7 +14,7 @@ export async function about_gen(image_url) {
         content: [
           {
             type: "text",
-            text: "what is this image of give me json respose of 'name, category, description' ",
+            text: "what is this image of give me json respose of 'name, category, description as product that has to listed' ",
           },
           {
             type: "image_url",
