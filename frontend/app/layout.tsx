@@ -24,13 +24,12 @@ export default function RootLayout({
           attribute="class"
           defaultTheme="system"
           enableSystem
-        // disableTransitionOnChange
+          // disableTransitionOnChange
         >
           <NavBar />
           {children}
-          <BackgroundBeams className="-z-[10]"/>
+          {/* <BackgroundBeams className="-z-[10]"/> */}
         </ThemeProvider>
-        
       </body>
     </html>
   );
