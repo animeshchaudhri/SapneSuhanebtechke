@@ -509,7 +509,7 @@ export default function Home() {
                               />
                             ) : (
                               <img
-                                src={genData.lifestyleImage}
+                                src={genData.productImage}
                                 className="bg-cover"
                               />
                             )}
